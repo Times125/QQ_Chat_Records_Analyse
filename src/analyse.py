@@ -13,7 +13,7 @@ from src.config import material
 from src.mredis import MyRedis
 
 
-# 从txt文件中读取数据
+# 从txt文件中读取数据，利用正则匹配想要的数据
 def read_data():
     fn = os.path.join(material, 'records.txt')
     with open(fn, 'r', encoding='utf-8', errors='ignore') as reader:
@@ -23,9 +23,16 @@ def read_data():
         log_content_arr = re.split(re_pat, txt)[1:]  # 记录内容数组['\n', '\n选修的\n\n', '\n就怕这次…]
 
         print(len(log_title_arr), '---', len(log_content_arr))
-        for i in range(int(len(log_title_arr)/20)):
-            print(log_title_arr[i])
-            # print(log_content_arr[i].strip('\n'))
+
+        entity = []  # 存放（日期，qq号，内容）
+        for i in range(int(len(log_title_arr))):
+            date = re.search(r'20[\d-]{8}\s[\d:]{7,8}', log_title_arr[i]).group()  # 匹配记录头中的时间
+            qq = re.search(r'(?<=\()[^\)]+', log_title_arr[i]).group()  # 匹配记录头中的QQ号
+            content = log_content_arr[i].strip('\n')
+            entity.append((date, qq, content))
+            print(date)
+            print(qq)
+            print(content)  # 聊天内容
 
     rdis = MyRedis.get_redis_instance()  # 获得一个redis实例
     rdis.set('test', 'test')
