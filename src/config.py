@@ -8,5 +8,11 @@
 """
 import os
 
-# 聊天记录目录
+# 聊天记录以及停用词表目录
 material = os.path.join(os.path.abspath('..'), 'test')
+
+# 文件输出目录
+output_path = os.path.join(os.path.abspath('..'), 'output')
+
+# 词云字体目录
+font_path = '‪C:\Windows\Fonts\SIMYOU.TTF'

@@ -7,11 +7,12 @@
 @Description: 
 """
 
-from src.analyse import read_data
+from src.analyse import *
 
 
 def main():
     read_data()
+    analyse()
 
 
 if __name__ == '__main__':
