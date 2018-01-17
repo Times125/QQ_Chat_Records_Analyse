@@ -8,6 +8,7 @@
 """
 import re
 import jieba
+import jieba.analyse
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from collections import Counter
@@ -67,15 +68,23 @@ def analyse():
     for content in contents:
         seg_list = jieba.cut(content, cut_all=False)
         seg_list = [sl for sl in seg_list if sl not in stopwords]
-        print(seg_list)
+        # print(seg_list)
         if len(seg_list) != 0:
             res_list.extend(seg_list)
-    # 获取关键词
+    # 统计频次最高的词
     content_counter = Counter(res_list)
     most_hot_topic = dict([(k, v) for k, v in content_counter.most_common(600)])  # 谈论最多的话题点
     most_hot_topic.pop(' ')  # 删除空白项
     print(most_hot_topic)
-    draw(most_hot_topic, 'most_hot_topic.jpg', 'longmao.jpg')
+    draw(most_hot_topic, 'most_hot_word.jpg', 'longmao.jpg')
+
+    # 基于TextRank 算法的关键词抽取
+    sentence = ''.join(res_list)
+    print(sentence, '===')
+    text_rank = jieba.analyse.textrank(sentence, topK=100, withWeight=False,
+                                       allowPOS=('ns', 'n', 'vn', 'v', 'adj', 'adv'))
+    print(text_rank)
+    draw(text_rank, 'most_hot_topic_tr.jpg', 'longmao.jpg')
 
 
 # 显示统计结果
@@ -83,7 +92,10 @@ def draw(counter_dict, file_name, mask_name):
     mask = imread(os.path.join(material, mask_name))
     wc = WordCloud(font_path=font_path, width=1046, height=1066, background_color="white",
                    relative_scaling=.6, max_words=1000, mask=mask, max_font_size=100)
-    wc.fit_words(counter_dict)  # 字体大小和词频有关
+    if type(counter_dict) is dict:
+        wc.fit_words(counter_dict)  # 字体大小和词频有关
+    elif type(counter_dict) is list:
+        wc.generate(' '.join(counter_dict))
     wc.to_file(os.path.join(output_path, file_name))  # 将词云导出到文件
     '''
     # plt 画图
