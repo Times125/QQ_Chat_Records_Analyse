@@ -101,22 +101,40 @@ def analyse():
 
     # 分析一天中群最活跃的时间段
     hours_counter_res = Counter(hours)
-    hours_counter = dict([(k + '点', v) for k, v in hours_counter_res.most_common(24)])
+    hours_counter = dict([(k + '时', v) for k, v in hours_counter_res.most_common(24)])
     print(hours_counter)
     draw(hours_counter, 'most_active_hour.jpg', 'huoguo.jpg')
-    txt = '我今天很伤心啊'
-    emotion_analyse(txt)
+
+    # 分析用户情感，推测用户性格
+    txt = []
+    user_sentiment = {}
+    for qq in most_active_person:
+        person_index = [i for i, x in enumerate(qqs) if x == qq]  # 最活跃的人的聊天记录的位置
+        for i in person_index:
+            txt.append(contents[i])
+        sentiment_index = emotion_analyse(txt, qq)  # 计算此qq用户的情感指数
+        user_sentiment[qq] = sentiment_index
+    print(user_sentiment)
 
 
 # 对单个qq用户的情感分析
-def emotion_analyse(txt=None):
+def emotion_analyse(txt_lst=None, qq=None):
     """
     desc:对单个qq用户的情感分析，推测此用户的性格以及生活习惯等,利用工具SnowNLP
-    :param txt: 传入需要分析的内容text
-    :return:
+    :param txt_lst: 传入需要分析的内容text
+    :param qq: 传入被分析人的qq
+    :return: 用户情感打分
     """
-    s = SnowNLP(txt)
-    print(s.sentiments)
+    if txt_lst is None or qq is None:
+        return
+    sentiment_scores = 0.0
+    for txt in txt_lst:
+        if len(txt) == 0:
+            txt = ' '
+        s = SnowNLP(txt)
+        sentiment_scores += s.sentiments
+        print(sentiment_scores, '<<<=====',qq)
+    return sentiment_scores/len(txt_lst)
 
 
 # 显示统计结果
