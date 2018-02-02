@@ -6,7 +6,7 @@
 @Time:  2018/1/17 20:19
 @Description: 
 """
-#! /usr/bin/env python
+# ! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -14,7 +14,6 @@
 @Time:  2018/1/17 20:19
 @Description: 
 """
-
 import jieba
 import os
 import numpy as np
